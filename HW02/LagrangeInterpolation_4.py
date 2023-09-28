@@ -5,7 +5,10 @@ from numpy.polynomial.polynomial import Polynomial
 def log_mean_squared_error_fun(y,ypred):
     LMSE = np.mean((np.log(y)-np.log(ypred))**2)
     return LMSE
-    
+
+seed_value = 50
+np.random.seed(seed_value)
+
 #generate the training set
 a, b = np.pi/4,3*np.pi/4
 n = 100
