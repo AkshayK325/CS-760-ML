@@ -10,7 +10,7 @@ y = df['Prediction'].values
 X = np.hstack([np.ones((X.shape[0], 1)), X])
 
 #sigmoid function
-def sigmoid(z):
+def sigmoidC(z):
     z = np.array(z.flatten(),dtype=float)
     sig = 1. / (1 + np.exp(-z.flatten()))
     return sig
@@ -28,10 +28,13 @@ def gradient(X, y, y_pred):
 #logistic regression with gradient descent
 def logistic_regression(X, y, lr=0.1, epochs=1000):
     theta = np.zeros((X.shape[1], 1))
-    for _ in range(epochs):
-        y_pred = sigmoid(np.dot(X, theta))
+    for i in range(epochs):
+        Xtheta = np.dot(X, theta)
+        y_pred = sigmoidC(Xtheta)
         gradients = gradient(X, y, y_pred)
-        theta = theta - lr * gradients
+        theta = theta - lr * gradients.reshape((-1,1))
+        # if np.linalg.norm(gradients.reshape((-1,1))) < 8:
+        #     break;
     return theta
 
 # 5-Fold CV
@@ -46,11 +49,12 @@ for fold in folds:
     train_y = np.concatenate((y[:fold[0]], y[fold[1]:]), axis=0)
 
     # logistic regression
-    theta = logistic_regression(train_X, train_y, lr=0.1, epochs=10)
+    theta = logistic_regression(train_X, train_y, lr=0.001, epochs=500)
 
     # Predict
-    y_pred = sigmoid(np.dot(test_X, theta))
+    y_pred = sigmoidC(np.dot(test_X, theta))
     predictions = (y_pred >= 0.5).astype(int)
+    predictions= np.array(predictions)
 
     #Calculate metrics
     accuracy = np.mean(predictions == test_y)

@@ -9,10 +9,10 @@ X = X[:,1::]
 y = df['Prediction'].values
 
 # Split data
-train_X = X[:4000]
-train_y = y[:4000]
-test_X = X[4000:]
-test_y = y[4000:]
+train_X = X[:4001]
+train_y = y[:4001]
+test_X = X[4001:]
+test_y = y[4001:]
 
 def euclidean_distance(x1, x2):
     return np.linalg.norm(x1 - x2)
@@ -38,27 +38,33 @@ def logistic_regression(X, y, num_iterations, learning_rate):
     #GD
     for _ in range(num_iterations):
         linear_model = np.dot(X, weights) + bias
+        linear_model = np.array(linear_model.flatten(),dtype=float)
+
         predicted_y = 1 / (1 + np.exp(-linear_model))
         
         # Compute gradients
         dw = (1/n_samples) * np.dot(X.T, (predicted_y - y))
         db = (1/n_samples) * np.sum(predicted_y - y)
-
+        
+        # print(dw.shape,db,weights.shape,bias)
         # Update weights and bias
-        weights -= learning_rate * dw
+        weights -= learning_rate * np.array(dw.flatten(),dtype=float)
         bias -= learning_rate * db
     
     return weights, bias
 
 def predict_logistic(X, weights, bias):
     linear_model = np.dot(X, weights) + bias
+    linear_model = np.array(linear_model.flatten(),dtype=float)
+
     return 1 / (1 + np.exp(-linear_model))
 
-# Train kNN and make predictions
+
+# kNN to make predictions
 knn_predictions = kNN(train_X, train_y, test_X, 5)
 
-# Train Logistic Regression and make predictions
-weights, bias = logistic_regression(train_X, train_y, num_iterations=1000, learning_rate=0.001)
+# Logistic Regression to make predictions
+weights, bias = logistic_regression(train_X, train_y, num_iterations=500, learning_rate=0.001)
 logistic_predictions = predict_logistic(test_X, weights, bias)
 
 # ROC Curve
@@ -68,7 +74,7 @@ knn_probs = [1 if i == 1 else 0 for i in knn_predictions]
 fpr_knn, tpr_knn, _ = roc_curve(test_y, knn_probs)
 fpr_logistic, tpr_logistic, _ = roc_curve(test_y, logistic_predictions)
 
-plt.figure(figsize=(10, 7))
+plt.figure()
 plt.plot(fpr_knn, tpr_knn, label="kNN")
 plt.plot(fpr_logistic, tpr_logistic, label="Logistic Regression")
 plt.xlabel("False Positive Rate")

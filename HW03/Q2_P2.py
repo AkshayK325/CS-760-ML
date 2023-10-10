@@ -29,7 +29,8 @@ for fold in folds:
 
     # Predict
     predictions = [one_nn(train_X, train_y, test_point) for test_point in test_X]
-
+    
+    predictions= np.array(predictions)
     #Calculate metrics
     accuracy = np.mean(predictions == test_y)
     precision = np.sum((predictions == 1) & (test_y == 1)) / np.sum(predictions == 1)

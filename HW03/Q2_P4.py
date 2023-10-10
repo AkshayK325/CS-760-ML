@@ -34,7 +34,9 @@ results = []
 
 for k in k_values:
     accuracies = []
+    j=0;
     for fold in folds:
+        print("Running the fold number = ",j+1)
         test_X = X[fold[0]:fold[1]]
         test_y = y[fold[0]:fold[1]]
         train_X = np.concatenate((X[:fold[0]], X[fold[1]:]), axis=0)
@@ -42,6 +44,7 @@ for k in k_values:
         
         predictions = [kNN(train_X, train_y, test_point, k) for test_point in test_X]
         accuracies.append(accuracy(test_y, predictions))
+        j=j+1
     results.append(np.mean(accuracies))
 
 #results
