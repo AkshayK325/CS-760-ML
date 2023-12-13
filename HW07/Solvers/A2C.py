@@ -114,12 +114,13 @@ class A2C(AbstractSolver):
         actions_one_hot = torch.tensor(actions_one_hot)
         
         G = 0
+        returns = np.zeros(len(rewards))
         if not done:
             G = self.actor_critic.value(torch.tensor(next_state, dtype=torch.float32)).item()
         for i in reversed(range(len(rewards))):
             G = rewards[i] + self.options.gamma * G
             returns[i] = G
-        returns = torch.tensor(returns, dtype=torch.float32)
+        returns_tensor = torch.tensor(returns, dtype=torch.float32)
         # # Compute returns
         # returns = np.zeros_like(rewards)
         # # TODO: Compute bootstrapped returns for each state-action in states
